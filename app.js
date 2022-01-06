@@ -8,7 +8,7 @@ const errorController = require('./controllers/error');
 const app = express();
 const port = 3000;
 
-const db = require('./util/database');
+const sequelize = require('./util/database');
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -16,11 +16,11 @@ app.set('views', 'views');
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
-db.execute('SELECT * FROM products').then((result) => {
-    console.log(result[0], result[1]);
-}).catch((error) => {
-    console.log(error);
-});
+// db.execute('SELECT * FROM products').then((result) => {
+//     console.log(result[0], result[1]);
+// }).catch((error) => {
+//     console.log(error);
+// });
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -30,6 +30,11 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
+sequelize.sync().then((response) => {
+    console.log(response);
+    app.listen(port, () => {
+        console.log(`Example app listening at http://localhost:${port}`)
+    })
+}).catch((err) => {
+    console.log(err);
 })

@@ -4,9 +4,10 @@ const Cart = require('../models/cart');
 const db = require('../util/database');
 
 exports.getProducts = (req, res, next) => {
-    Product.fetchAll().then(([rows, fieldData]) => {
+
+    Product.findAll().then((pd) => {
         res.render('shop/product-list', {
-            prods: rows,
+            prods: pd,
             pageTitle: 'All Products',
             path: '/products'
         });
@@ -18,28 +19,40 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
     const prodId = req.params.productId;
-    Product.findById(prodId).then(([product]) => {
+
+    // Product.findAll({ where: { id: prodId } }).then((pd) => {
+    //         res.render('shop/product-detail', {
+    //             product: pd[0],
+    //             pageTitle: pd[0].title,
+    //             path: '/products'
+    //         });
+    //     }).catch(err => {
+    //         console.log(err);
+    //     })
+
+    // findById is deprecated in Sequelize, using findByPk instead
+    Product.findByPk(prodId).then((pd) => {
         res.render('shop/product-detail', {
-            product: product[0],
-            pageTitle: product.title,
+            product: pd,
+            pageTitle: pd.title,
             path: '/products'
         });
     }).catch((err) => {
         console.log(err);
     })
-
 };
 
 exports.getIndex = (req, res, next) => {
-    Product.fetchAll().then(([rows, fieldData]) => {
+    // findAll method in Sequelize will fetch all data inputed
+    Product.findAll().then((pd) => {
         res.render('shop/index', {
-            prods: rows,
+            prods: pd,
             pageTitle: 'Shop',
             path: '/'
         });
     }).catch((err) => {
         console.log(err);
-    });
+    })
 
 };
 
